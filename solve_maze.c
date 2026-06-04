@@ -4,12 +4,13 @@
 #include <string.h>
 #define WALL '#'
 #define PATH ' '
+#define VISITED 'x'
 #define PLAYER '@'
 
 enum DIRECTIONS {
 	DOWN = 0,
-	RIGHT,
 	LEFT,
+	RIGHT,
 	UP
 };
 
@@ -56,12 +57,8 @@ int get_args(int argc, char *argv[], FILE **maze_file) {
 	return state;
 }
 
-bool is_valid(int x, int y) {
-	return (x > 0 && y > 0 && x < (w - 1) && y < (h - 1) && maze[y][x] != WALL);
-}
-
 void print_maze() {
-	printf("\e[1;1H\e[2J");
+	printf("\e[0;0H\e[2J");
 	for(int i = 0; i < h; i++) {
 		for(int j = 0; j < w; j++) {
 			printf("%c", maze[i][j]);
@@ -73,24 +70,32 @@ void print_maze() {
 	if (wait_input) getchar();
 }
 
+bool is_valid(int x, int y) {
+	return (x > 0 && y > 0 && x < w && y < h 
+			&& maze[y][x] != WALL && maze[y][x] != VISITED);
+}
+
 bool solve_maze(int x, int y) {
 	maze[y][x] = PLAYER;
 	print_maze();
+
 	if (x == (w - 1) && y == (h - 2)) return true;
+
 	int next_x, next_y;
 	for (int i = 0; i < 4; i++) {
-		if (i == DOWN) next_x = x, next_y = y + 1;
-		if (i == LEFT) next_x = x - 1, next_y = y;
-		if (i == RIGHT) next_x = x + 1, next_y = y;
-		if (i == UP) next_x = x, next_y = y - 1;
+		if (i == DOWN)  { next_x = x;     next_y = y + 1; }
+		if (i == LEFT)  { next_x = x - 1; next_y = y;     }
+		if (i == RIGHT) { next_x = x + 1; next_y = y;     }
+		if (i == UP)    { next_x = x;     next_y = y - 1; }
+
 		if (is_valid(next_x, next_y)) {
-			maze[y][x] = PATH;
+			maze[y][x] = VISITED;
 			if (solve_maze(next_x, next_y)) return true;
+			maze[next_y][next_x] = VISITED;
 			maze[y][x] = PLAYER;
 			print_maze();
 		}
 	}
-
 	return false;
 }
 
@@ -122,7 +127,7 @@ int main(int argc, char *argv[]) {
 	
 	grid = (char *) malloc(sizeof(char) * w * h);
 	maze = (char **) malloc(sizeof(char *) * h);
-
+	
 	for (int i = 0; i < h; i++) {
 		maze[i] = &grid[i * w];
 		fread(&maze[i][0], sizeof(char), w, maze_file);
