@@ -53,3 +53,9 @@ dkms.conf
 
 # debug information files
 *.dwo
+
+# For this project
+
+maze*/
+bin
+*.csv
