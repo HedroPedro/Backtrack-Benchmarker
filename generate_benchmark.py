@@ -17,12 +17,13 @@ if __name__ == "__main__":
 			Path(maze_str).mkdir()
 		for i in range(n):
 			with open(f"{maze_str}/{i}.maze", "w") as f:
-				start = time.perf_counter()
-				run(["./bin/generate_maze", str(size), str(size)], stdout=f)
-				end = (time.perf_counter() - start) / 100000000
+				args = ["./bin/generate_maze", str(size), str(size)]
+				start = time.perf_counter_ns()
+				run(args, stdout=f)
+				end = (time.perf_counter_ns() - start) / 1000
 				gen_time[i] = end
 		mean = statistics.mean(gen_time)
 		sd = statistics.pstdev(gen_time)
-		csv.write(f"{size**2};{mean};{sd}\n")
+		csv.write(f"{size**2};{mean:.3f};{sd:.3f}\n")
 		size += 2
 	csv.close()
