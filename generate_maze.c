@@ -12,7 +12,7 @@ int width = 0;
 int height = 0;
 
 bool is_valid(int x, int y) {
-	return (x > 0 && x < (width-1) && y > 0 && y < (height - 1) && maze[y][x] == WALL);
+	return (x > 0 && x < (width - 1) && y > 0 && y < (height - 1) && maze[y][x] == WALL);
 }
 
 void generate_maze(int x, int y) {
@@ -44,9 +44,11 @@ void generate_maze(int x, int y) {
 
 int main(int argc, char *argv[]) {
 	if (argc < 3) {
-		printf("Try calling with width and height");
+		printf("Try calling with width and height <seed>");
 		exit(1);
+
 	}
+
 	width = atoi(argv[1]);
 	height = atoi(argv[2]);
 	maze = (char **) malloc(sizeof(char *) * height);
@@ -59,7 +61,10 @@ int main(int argc, char *argv[]) {
 		}
 	}
 
-	srand(time(NULL));
+	struct timespec ts;
+	clock_gettime(CLOCK_MONOTONIC, &ts);
+	srand(ts.tv_sec ^ ts.tv_nsec);
+
 	generate_maze(1, 1);
 	maze[height - 2][width - 1] = PATH;
 
