@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include <bool.h>
+#include <stdbool.h>
 
 #define PATH ' '
 #define WALL '#'
@@ -20,9 +20,9 @@ void generate_maze(int x, int y) {
 	int dirs[4] = {0, 1, 2, 3};
 	for(int i = 0; i < 4; i++) {
 		int r = rand()%4;
-		int temp = dir[i];
-		dir[i] = dir[r];
-		dir[r] = temp;
+		int temp = dirs[i];
+		dirs[i] = dirs[r];
+		dirs[r] = temp;
 	}
 
 	for (int i = 0; i < 4; i++) {
@@ -47,13 +47,27 @@ int main(int argc, char *argv[]) {
 		printf("Try calling with width and height");
 		exit(1);
 	}
-	width = argv[1];
-	height = argv[2];
+	width = atoi(argv[1]);
+	height = atoi(argv[2]);
 	maze = (char **) malloc(sizeof(char *) * height);
 	char *grid = (char *) malloc(sizeof(char) * width * height);
 	
 	for (int i = 0; i < height; i++) {
 		maze[i] = &grid[i*width];
+		for(int j= 0; j < width; j++) {
+			maze[i][j] = WALL;
+		}
+	}
+
+	srand(time(NULL));
+	generate_maze(1, 1);
+	maze[height - 2][width - 1] = PATH;
+
+	for(int i = 0; i < height; i++) {
+		for(int j = 0; j < width; j++) {
+			printf("%c", maze[i][j]);
+		}
+		printf("\n");
 	}
 
 	free(grid);
