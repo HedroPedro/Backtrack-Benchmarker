@@ -56,11 +56,12 @@ int get_args(int argc, char *argv[], FILE **maze_file) {
 	return state;
 }
 
-inline bool is_valid(int x, int y) {
+bool is_valid(int x, int y) {
 	return (x > 0 && y > 0 && x < (w - 1) && y < (h - 1) && maze[y][x] != WALL);
 }
 
 void print_maze() {
+	printf("\e[1;1H\e[2J");
 	for(int i = 0; i < h; i++) {
 		for(int j = 0; j < w; j++) {
 			printf("%c", maze[i][j]);
