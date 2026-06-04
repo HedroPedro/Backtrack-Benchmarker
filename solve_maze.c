@@ -58,8 +58,11 @@ int get_args(int argc, char *argv[], FILE **maze_file) {
 }
 
 void print_maze() {
-	printf("\e[2;1H\e[2J");
-	fflush(stdout);
+	#ifdef _WIN32
+		system("cls");
+	#else
+		system("clear");
+	#endif
 	for(int i = 0; i < h; i++) {
 		for(int j = 0; j < w; j++) {
 			printf("%c", maze[i][j]);
