@@ -1,0 +1,27 @@
+from subprocess import run
+from pathlib import Path
+import time
+import statistics
+
+if __name__ == "__main__":
+	size = 7
+	max_size = size**2+3
+	n = 50
+	csv = open("gen_mazes.csv", "w")
+	csv.write("size;mean_time;sd\n")
+	while size < max_size:
+		maze_str = f"maze_{size}x{size}"
+		gen_time = [None] * n
+		if not Path.exists(maze_str):
+			Path(maze_str).mkdir()
+		for i in range(n):
+			with open(f"{maze_str}/{i}.maze", "w") as f:
+				start = time.perf_counter()
+				run(["./bin/generate_maze", str(size), str(size)], stdout=f)
+				end = time.perf_counter() - start
+				gen_time[i] = end
+		mean = statistics.mean(gen_time)
+		sd = statistics.pstdev(gen_time)
+		csv.write(f"{size**2};{mean};{sd}\n")
+		size += 2
+	csv.close()
